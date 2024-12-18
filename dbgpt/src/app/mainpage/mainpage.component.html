@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with DB GPT</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --background-color: #f0f4f8;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-attachment: fixed;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1600px;
+            min-height: 90vh;
+            margin: 2vh auto;
+            background: white;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.1));
+            z-index: -1;
+        }
+
+        .logo {
+            max-width: 150px;
+            border-radius: 50%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+
+        .chat-container {
+            background-color: #f9fafb;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            height: 70vh;
+            overflow-y: auto;
+        }
+
+        .input-group .form-control {
+            border-radius: 20px 0 0 20px;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid black;
+        }
+
+        .input-group .btn-primary {
+            border-radius: 0 20px 20px 0;
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                margin: 0;
+                height: 100vh;
+                border-radius: 0;
+            }
+            .sidebar {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid h-100 p-0">
+        <div class="app-container row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar d-flex flex-column">
+                <div class="text-center mb-4">
+                    <h2 class="py-3 rounded" style="background-color: rgba(0,0,0,0.2); ">
+                        Db-GPT <i class="bi bi-cloud-check-fill"></i>
+                    </h2>
+                </div>
+                
+                <img src="assets/images/img_logo.jpg" alt="Db-GPT Logo" class="logo mx-auto d-block">
+                
+                <div class="mt-4">
+                    <div class="mb-3">
+                        <label class="form-label" style="color: black;">AI Model <i class="bi bi-robot"></i></label>
+                        <select class="form-select" id="modelSelect">
+                            <option>Azure OpenAI GPT-3.5</option>
+                            <option>Azure OpenAI GPT-4</option>
+                            <option >Azure OpenAI GPT-4o</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label" style="color: black;">Database <i class="bi bi-database"></i></label>
+                        <select class="form-select" id="databaseSelect">
+                            <option>Azure SQL</option>
+                            <option selected>SQL Server</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="keepHistory">
+                        <label class="form-check-label" for="keepHistory" style="color: black;">
+                            Keep  History
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mt-auto text-center text-white-50 small">
+                    © 2024 Db-GPT Assistant
+                </div>
+            </div>
+            
+            <!-- Main Chat Area -->
+            <div class="col-md-9 bg-light">
+                <div class="container-fluid p-4">
+                    <h1 class="text-center mb-4 text-dark">
+                        Chat with DB-GPT🧑‍💻
+                    </h1>
+                    
+                    <div class="chat-container mb-4 p-3" id="chatMessages">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Start exploring your database with AI-powered insights...
+                        </div>
+
+                        
+                        
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="chatInput" 
+                               placeholder="Ask a database-related question...">
+                        <button class="btn btn-primary" id="sendMessage" style="color: black;">
+                            Send <i class="bi bi-send-fill ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
